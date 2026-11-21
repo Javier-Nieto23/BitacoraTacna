@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import pool from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import solicitudesRoutes from './routes/solicitudesRoutes.js';
 import vehiculosRoutes from './routes/vehiculosRoutes.js';
@@ -23,8 +24,22 @@ app.use('/api/solicitudes', solicitudesRoutes);
 app.use('/api/vehiculos', vehiculosRoutes);
 
 // Ruta de prueba
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Backend activo', timestamp: new Date() });
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({
+      status: 'Backend activo',
+      database: 'connected',
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'Backend activo',
+      database: 'disconnected',
+      timestamp: new Date(),
+      error: error.message,
+    });
+  }
 });
 
 // Manejo de errores 404

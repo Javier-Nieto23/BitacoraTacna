@@ -6,11 +6,14 @@ const sqlFilePath = path.resolve(process.cwd(), '../setup_database.sql');
 
 const loadSqlStatements = () => {
   const sql = fs.readFileSync(sqlFilePath, 'utf8');
+  const withoutComments = sql
+    .replace(/--.*$/gm, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
 
-  return sql
+  return withoutComments
     .split(';')
     .map((statement) => statement.trim())
-    .filter((statement) => statement && !statement.startsWith('--'));
+    .filter((statement) => statement.length > 0);
 };
 
 const initDatabase = async () => {
@@ -29,6 +32,7 @@ const initDatabase = async () => {
     console.log(`Base de datos inicializada correctamente desde ${sqlFilePath}`);
   } catch (error) {
     console.error('Error al inicializar la base de datos:', error.message);
+    console.error('Revisa si la base está parcialmente creada o si la tabla rol todavía no existe.');
     process.exitCode = 1;
   } finally {
     await pool.end();

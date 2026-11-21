@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Login.css';
@@ -8,7 +8,40 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [dbStatus, setDbStatus] = useState({ checking: true, connected: false });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkDatabaseConnection = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/health`, {
+          timeout: 7000,
+        });
+
+        if (isMounted) {
+          setDbStatus({
+            checking: false,
+            connected: response.data?.database === 'connected',
+          });
+        }
+      } catch (err) {
+        if (isMounted) {
+          setDbStatus({
+            checking: false,
+            connected: false,
+          });
+        }
+      }
+    };
+
+    checkDatabaseConnection();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -48,6 +81,15 @@ export default function Login() {
           </div>
           <h1>Bitácora de Vehículos</h1>
           <p>Sistema de Control Empresarial</p>
+        </div>
+
+        <div className={`db-status ${dbStatus.connected ? 'db-status--online' : 'db-status--offline'}`}>
+          <span className="db-status__dot" />
+          {dbStatus.checking
+            ? 'Verificando conexión a la base de datos...'
+            : dbStatus.connected
+              ? 'Base de datos conectada'
+              : 'Base de datos no disponible'}
         </div>
 
         <form onSubmit={handleLogin} className="login-form">

@@ -126,6 +126,40 @@
   margin: 8px 0 0;
 }
 
+.db-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.db-status__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.db-status--online {
+  color: #1f9d61;
+  background: rgba(31, 157, 97, 0.1);
+  border-color: rgba(31, 157, 97, 0.25);
+}
+
+.db-status--offline {
+  color: #d93025;
+  background: rgba(217, 48, 37, 0.08);
+  border-color: rgba(217, 48, 37, 0.2);
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
