@@ -1,13 +1,15 @@
 -- tabla de roles
-CREATE TABLE rol (
+CREATE TABLE IF NOT EXISTS rol (
     id       SERIAL PRIMARY KEY,
     name_rol VARCHAR(500) NOT NULL
 );
 
-INSERT INTO rol (id, name_rol) VALUES (2, 'Operacion');
+INSERT INTO rol (id, name_rol)
+VALUES (1, 'Operacion')
+ON CONFLICT (id) DO NOTHING;
 
 -- tabla de usuarios
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id            SERIAL PRIMARY KEY,
     id_rol        INT NOT NULL REFERENCES rol(id),
     name          VARCHAR(500) NOT NULL,
@@ -17,10 +19,11 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (id_rol, name, last_name, user_name, password_hash)
-VALUES (1, 'Javier', 'Nieto', 'jnieto', '$2b$10$y32KklHxDiPeKy2rcEj.eOqCKNkfH3VxJ1Kml8FdJMffeZGevP8Dq');
+VALUES (1, 'Javier', 'Nieto', 'jnieto', '$2b$10$y32KklHxDiPeKy2rcEj.eOqCKNkfH3VxJ1Kml8FdJMffeZGevP8Dq')
+ON CONFLICT (user_name) DO NOTHING;
 
 -- tabla de carros
-CREATE TABLE cars (
+CREATE TABLE IF NOT EXISTS cars (
     id            SERIAL PRIMARY KEY,
     brand         VARCHAR(500),
     model         VARCHAR(500),
@@ -31,7 +34,7 @@ CREATE TABLE cars (
 );
 
 -- tabla de solicitud de salida de los carros
-CREATE TABLE exit_request (
+CREATE TABLE IF NOT EXISTS exit_request (
     id            SERIAL PRIMARY KEY,
     id_user       INT NOT NULL REFERENCES users(id),
     id_car        INT NOT NULL REFERENCES cars(id),
@@ -44,7 +47,7 @@ CREATE TABLE exit_request (
 );
 
 -- tabla de solicitud de entrada de los carros
-CREATE TABLE entrance_request (
+CREATE TABLE IF NOT EXISTS entrance_request (
     id              SERIAL PRIMARY KEY,
     id_user         INT NOT NULL REFERENCES users(id),
     id_exit_request INT NOT NULL REFERENCES exit_request(id),
@@ -57,7 +60,7 @@ CREATE TABLE entrance_request (
 );
 
 -- disponibilidad de carros y a qué departamento (rol) pertenece cada uno
-CREATE TABLE cars_status (
+CREATE TABLE IF NOT EXISTS cars_status (
     id     SERIAL PRIMARY KEY,
     id_car INT NOT NULL REFERENCES cars(id),
     id_rol INT NOT NULL REFERENCES rol(id),
