@@ -4,6 +4,8 @@ CREATE TABLE rol (
     name_rol VARCHAR(500) NOT NULL
 );
 
+INSERT INTO rol (id, name_rol) VALUES (2, 'Operacion');
+
 -- tabla de usuarios
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
@@ -13,6 +15,9 @@ CREATE TABLE users (
     user_name     VARCHAR(500) NOT NULL UNIQUE,
     password_hash VARCHAR(500) NOT NULL
 );
+
+INSERT INTO users (id_rol, name, last_name, user_name, password_hash)
+VALUES (1, 'Javier', 'Nieto', 'jnieto', '$2b$10$y32KklHxDiPeKy2rcEj.eOqCKNkfH3VxJ1Kml8FdJMffeZGevP8Dq');
 
 -- tabla de carros
 CREATE TABLE cars (
@@ -59,3 +64,8 @@ CREATE TABLE cars_status (
     status VARCHAR(500),
     UNIQUE (id_car, id_rol)
 );
+
+-- ahora solo debemos agregar la conexion con el portal web y darle las funciones
+-- que haremos
+
+SELECT * FROM users;
