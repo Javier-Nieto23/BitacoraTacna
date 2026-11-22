@@ -1,10 +1,39 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import pool from './config/database.js';
 
-const sqlFilePath = path.resolve(process.cwd(), '../setup_database.sql');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const candidatePaths = [
+  process.env.DB_INIT_SQL_PATH,
+  path.resolve(__dirname, '../setup_database.sql'),
+  path.resolve(__dirname, 'setup_database.sql'),
+  path.resolve(process.cwd(), 'setup_database.sql'),
+  path.resolve(process.cwd(), '../setup_database.sql'),
+  path.resolve(process.cwd(), 'backend/setup_database.sql'),
+];
+
+const resolveSqlFilePath = () => {
+  const uniqueCandidates = [...new Set(candidatePaths.filter(Boolean))];
+
+  for (const candidate of uniqueCandidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return uniqueCandidates[0] || 'setup_database.sql';
+};
+
+const sqlFilePath = resolveSqlFilePath();
 
 const loadSqlStatements = () => {
+  if (!fs.existsSync(sqlFilePath)) {
+    throw new Error(`No se encontró el archivo SQL en ninguna de estas rutas: ${candidatePaths.join(' | ')}`);
+  }
+
   const sql = fs.readFileSync(sqlFilePath, 'utf8');
   const withoutComments = sql
     .replace(/--.*$/gm, '')
