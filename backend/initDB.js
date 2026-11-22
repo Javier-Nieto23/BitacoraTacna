@@ -8,15 +8,20 @@ const __dirname = path.dirname(__filename);
 
 const candidatePaths = [
   process.env.DB_INIT_SQL_PATH,
-  path.resolve(__dirname, '../setup_database.sql'),
   path.resolve(__dirname, 'setup_database.sql'),
+  path.resolve(__dirname, '../setup_database.sql'),
   path.resolve(process.cwd(), 'setup_database.sql'),
   path.resolve(process.cwd(), '../setup_database.sql'),
   path.resolve(process.cwd(), 'backend/setup_database.sql'),
-];
+  path.resolve(process.cwd(), './backend/setup_database.sql'),
+].filter(Boolean);
 
 const resolveSqlFilePath = () => {
-  const uniqueCandidates = [...new Set(candidatePaths.filter(Boolean))];
+  const uniqueCandidates = [...new Set(candidatePaths)];
+
+  console.log('[DB] cwd actual:', process.cwd());
+  console.log('[DB] __dirname:', __dirname);
+  console.log('[DB] Buscando el SQL en estas rutas:', uniqueCandidates);
 
   for (const candidate of uniqueCandidates) {
     if (fs.existsSync(candidate)) {
